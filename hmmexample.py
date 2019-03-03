@@ -4,20 +4,20 @@
 #from itertools import izip
 from math import log
 
-def _normalize_prob(prob, item_set):
-    result = {}
-    if prob is None:
+def _normalize_prob(prob, item_set): # 
+    result = {} #결과값은 튜플
+    if prob is None: #확률이 주어지지 않을 경우, 단순히 딕셔너리 키의 숫자로 균등하게 나눈다. 
         number = len(item_set)
         for item in item_set:
             result[item] = 1.0 / number
     else:
         prob_sum = 0.0
         for item in item_set:
-            prob_sum += prob.get(item, 0)
+            prob_sum += prob.get(item, 0) #states 의 값이 item 에 없으면, default 로 0 을 return 한다. 
 
         if prob_sum > 0:
             for item in item_set:
-                result[item] = prob.get(item, 0) / prob_sum
+                result[item] = prob.get(item, 0) / prob_sum # prob_sum 이 1이 되지 않으면 총 합으로 normalize 한다. 1이 되지 않을 경우의 함수 조건을 추가하자. 
         else:
             for item in item_set:
                 result[item] = 0
@@ -25,6 +25,14 @@ def _normalize_prob(prob, item_set):
     return result
 
 def _normalize_prob_two_dim(prob, item_set1, item_set2):
+    '''
+              item1[0]   item1[1]   item1[2]   item1[3]
+    item2[0]    p1          p2         p3        p4
+    item2[1]    p1'         p2'
+    item2[2]    p1''        p2''
+              sum = 1    sum = 1
+        
+    '''
     result = {}
     if prob is None:
         for item in item_set1:
@@ -35,7 +43,7 @@ def _normalize_prob_two_dim(prob, item_set1, item_set2):
 
     return result
 
-# item 이 count 안에 있으면, 몇개나 있는지 센다. 
+# item 이 state 집합 안에 있으면, staes 가 몇 개나 있는지 센다.   ==> 왜 리스트의 len 나 size 로 하면 안되는가? 
 def _count(item, count):
     if item not in count:
         count[item] = 0
@@ -46,29 +54,31 @@ def _count_two_dim(item1, item2, count):
         count[item1] = {}
     _count(item2, count[item1])
 
-def _get_init_model(sequences):
-    symbol_count = {}
+def _get_init_model(sequences):   ##인풋 sequence 로 초기 주어진 TRANS MATRIX, EMIT MATRIX, FIRST STATE 로 초기 Model 클래스에 첫 값을 지정해준다. 
+    symbol_count = {} #symbol 개수가 몇개인지 센다
     state_count = {}
-    state_symbol_count = {}
-    state_start_count = {}
+    state_symbol_count = {} #여기서 부턴 2D 이건 왜 하는거지? => emit 을 만들어야 한다. state h e _ 와 symbol ACD ...가 필요한건.. emit matrix?
+    state_start_count = {} # 
     state_trans_count = {}
 
-    for state_list, symbol_list in sequences:
+    for state_list, symbol_list in sequences: # ACDCACDD,,,, 단백질 SEQUENCE
         pre_state = None
         for state, symbol in zip(state_list, symbol_list):
-            _count(state, state_count)
-            _count(symbol, symbol_count)
-            _count_two_dim(state, symbol, state_symbol_count)
+            _count(state, state_count) #딕셔너리의 key 개수를 센다 
+            _count(symbol, symbol_count) #딕셔너리의 key 개수를 센다 
+            _count_two_dim(state, symbol, state_symbol_count) #여기까진 count 숫자만 올려주는 함수이다 
             if pre_state is None:
-                _count(state, state_start_count)
+                _count(state, state_start_count) #초기조건 ... 
             else:
                 _count_two_dim(pre_state, state, state_trans_count)
             pre_state = state
 
     return Model(state_count.keys(), symbol_count.keys(),
         state_start_count, state_trans_count, state_symbol_count)
+    #     def __init__(self, states, symbols, start_prob=None, trans_prob=None, emit_prob=None):
+    # 그런데 Model class 는 나중에 정의되는데, 이 함수는 먼저 쓰인다? 
 
-def train(sequences, delta=0.0001, smoothing=0):
+def train(sequences, delta=0.0001, smoothing=0): #학습하는 함수 
     """
     Use the given sequences to train a HMM model.
     This method is an implementation of the `EM algorithm
@@ -77,16 +87,22 @@ def train(sequences, delta=0.0001, smoothing=0):
     The `delta` argument (which is defaults to 0.0001) specifies that the
     learning algorithm will stop when the difference of the log-likelihood
     between two consecutive iterations is less than delta.
+    
+    ## 드디어 나왔다! 언제 iteration 이 멈추는가. 
+    iteration 전 / 후의 확률 값의 차이가 delta 이하로 내려가면, 그때서야 iteration 을 멈춘다. 
 
     The `smoothing` argument is used to avoid zero probability,
     see :py:meth:`~hmm.Model.learn`.
+    ## smoothing 은... 확률이 0 이 되는 것을 막기 위함 이다? 그런데 내가 했을때 0 나옴... 
+
+    
     """
 
-    model = _get_init_model(sequences)
-    length = len(sequences)
+    model = _get_init_model(sequences) # 마찬가지로 첫 시퀀스로 트레이닝 학습할때 초기화 
+    length = len(sequences) #시퀀스 길이, symbol 수 몇개?
 
     old_likelihood = 0
-    for _, symbol_list in sequences:
+    for _, symbol_list in sequences: 
         old_likelihood += log(model.evaluate(symbol_list))
 
     old_likelihood /= length
