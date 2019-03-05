@@ -53,7 +53,9 @@ def _count_two_dim(item1, item2, count):
     if item1 not in count:
         count[item1] = {}
     _count(item2, count[item1])
-
+    
+    
+''' Training 에 쓰입니다. 
 def _get_init_model(sequences):   ##인풋 sequence 로 초기 주어진 TRANS MATRIX, EMIT MATRIX, FIRST STATE 로 초기 Model 클래스에 첫 값을 지정해준다. 
     symbol_count = {} #symbol 개수가 몇개인지 센다
     state_count = {}
@@ -77,8 +79,9 @@ def _get_init_model(sequences):   ##인풋 sequence 로 초기 주어진 TRANS M
         state_start_count, state_trans_count, state_symbol_count)
     #     def __init__(self, states, symbols, start_prob=None, trans_prob=None, emit_prob=None):
     # 그런데 Model class 는 나중에 정의되는데, 이 함수는 먼저 쓰인다? 
-
-def train(sequences, delta=0.0001, smoothing=0): #학습하는 함수 
+'''    
+'''
+def train(sequences, delta=0.01, smoothing=0.0001): #학습하는 함수 
     """
     Use the given sequences to train a HMM model.
     This method is an implementation of the `EM algorithm
@@ -121,6 +124,7 @@ def train(sequences, delta=0.0001, smoothing=0): #학습하는 함수
         old_likelihood = new_likelihood
 
     return model
+'''
 
 class Model(object):
     """
@@ -210,9 +214,11 @@ class Model(object):
                     prob += alpha[index - 1][state_from] * \
                         self.trans_prob(state_from, state_to)
                 alpha[index][state_to] = prob * self.emit_prob(state_to, sequence[index])
-
+        print('length of sequence : ', len(sequence))
+        print('length of alpha : ', len(alpha))
+        print('This is alpha : ', alpha)
         return alpha
-
+    '''
     def _backward(self, sequence):
         sequence_length = len(sequence)
         if sequence_length == 0:
@@ -233,6 +239,7 @@ class Model(object):
                 beta[0][state_from] = prob
 
         return beta
+        '''
 
     def evaluate(self, sequence):
         """
@@ -290,7 +297,7 @@ class Model(object):
                 max_prob = delta[state]
                 max_state = state
 
-        if max_state is None:
+        if max_state is None: ## ? why? 
             return []
 
         result = [max_state]
@@ -299,7 +306,7 @@ class Model(object):
             result.insert(0, max_state)
 
         return result
-
+'''
     def learn(self, sequence, smoothing=0):
         """
         Use the given `sequence` to find the best state transition and
@@ -389,4 +396,4 @@ class Model(object):
             else:
                 for symbol in self._symbols:
                     self._emit_prob[state][symbol] = 0
-
+'''
