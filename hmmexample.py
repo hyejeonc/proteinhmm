@@ -55,7 +55,7 @@ def _count_two_dim(item1, item2, count):
     _count(item2, count[item1])
     
     
-''' Training 에 쓰입니다. 
+#Training 에 쓰입니다. 
 def _get_init_model(sequences):   ##인풋 sequence 로 초기 주어진 TRANS MATRIX, EMIT MATRIX, FIRST STATE 로 초기 Model 클래스에 첫 값을 지정해준다. 
     symbol_count = {} #symbol 개수가 몇개인지 센다
     state_count = {}
@@ -63,6 +63,22 @@ def _get_init_model(sequences):   ##인풋 sequence 로 초기 주어진 TRANS M
     state_start_count = {} # 
     state_trans_count = {}
 
+    for state_list, symbol_list in zip(sequences[:][0], sequences[:][1]) : # ACDCACDD,,,, 단백질 SEQUENCE
+        pre_state = None
+        for state, symbol in zip(state_list, symbol_list):
+            _count(state, state_count) #딕셔너리의 key 개수를 센다 
+            _count(symbol, symbol_count) #딕셔너리의 key 개수를 센다 
+            _count_two_dim(state, symbol, state_symbol_count) #여기까진 count 숫자만 올려주는 함수이다 
+            if pre_state is None:
+                _count(state, state_start_count) #초기조건 ... 
+            else:
+                _count_two_dim(pre_state, state, state_trans_count)
+            pre_state = state
+
+    return Model(state_count.keys(), symbol_count.keys(),
+        state_start_count, state_trans_count, state_symbol_count)
+
+'''
     for state_list, symbol_list in sequences: # ACDCACDD,,,, 단백질 SEQUENCE
         pre_state = None
         for state, symbol in zip(state_list, symbol_list):
@@ -79,8 +95,8 @@ def _get_init_model(sequences):   ##인풋 sequence 로 초기 주어진 TRANS M
         state_start_count, state_trans_count, state_symbol_count)
     #     def __init__(self, states, symbols, start_prob=None, trans_prob=None, emit_prob=None):
     # 그런데 Model class 는 나중에 정의되는데, 이 함수는 먼저 쓰인다? 
-'''    
-'''
+'''   
+
 def train(sequences, delta=0.01, smoothing=0.0001): #학습하는 함수 
     """
     Use the given sequences to train a HMM model.
@@ -97,7 +113,6 @@ def train(sequences, delta=0.01, smoothing=0.0001): #학습하는 함수
     The `smoothing` argument is used to avoid zero probability,
     see :py:meth:`~hmm.Model.learn`.
     ## smoothing 은... 확률이 0 이 되는 것을 막기 위함 이다? 그런데 내가 했을때 0 나옴... 
-
     
     """
 
@@ -106,25 +121,36 @@ def train(sequences, delta=0.01, smoothing=0.0001): #학습하는 함수
 
     old_likelihood = 0
     for _, symbol_list in sequences: 
-        old_likelihood += log(model.evaluate(symbol_list))
-
-    old_likelihood /= length
+        #print(model.evaluate(symbol_list)) # 해당 단백질 순서로 viterbi- 로 구한 확률 
+       # print(model.evaluate(symbol_list))
+        old_likelihood += log(model.evaluate(symbol_list)) #계속 a 를 곱할거임 likelihood 는 log 로 저장 됨 
+       # print(log(model.evaluate(symbol_list)))
+       # print(old_likelihood)
+        #비확률과 그 합으로 확률 구한 다음에 
+        #각각 단백질마다 길이로 나눈다 
+    old_likelihood /= length  # old = old/length  
 
     while True:
         new_likelihood = 0
         for _, symbol_list in sequences:
             model.learn(symbol_list, smoothing)
+            #원래 있던 확률에서 새로운 전방확률, 방출확률 업데이트한다 
+           # print('this is new likelihood#', new_likelihood)
+           # print('this is just model#', model.evaluate(symbol_list))
+           # print('this is log model#', log(model.evaluate(symbol_list)))
             new_likelihood += log(model.evaluate(symbol_list))
-
+           # print('this is just model', model.evaluate(symbol_list))
+           # print('this is log model', log(model.evaluate(symbol_list)))
+            #새로운 우도를 구한다 
         new_likelihood /= length
-
+            #단백질마다 또 길이로 우도를 나눈다 
         if abs(new_likelihood - old_likelihood) < delta:
             break
-
+            
         old_likelihood = new_likelihood
 
     return model
-'''
+
 
 class Model(object):
     """
@@ -172,6 +198,7 @@ class Model(object):
         """
         if state not in self._states:
             return 0
+       # print('this is start_prob in method', self._start_prob[state])
         return self._start_prob[state]
 
     def trans_prob(self, state_from, state_to):
@@ -184,6 +211,7 @@ class Model(object):
         """
         if state_from not in self._states or state_to not in self._states:
             return 0
+        #print('this is trans_prob in method', self._trans_prob[state_from][state_to])
         return self._trans_prob[state_from][state_to]
 
     def emit_prob(self, state, symbol):
@@ -195,7 +223,9 @@ class Model(object):
         """
         if state not in self._states or symbol not in self._symbols:
             return 0
+        #print('this is emit_prob in method', self._emit_prob[state][symbol])
         return self._emit_prob[state][symbol]
+
 
     def _forward(self, sequence):
         sequence_length = len(sequence)
@@ -214,11 +244,16 @@ class Model(object):
                     prob += alpha[index - 1][state_from] * \
                         self.trans_prob(state_from, state_to)
                 alpha[index][state_to] = prob * self.emit_prob(state_to, sequence[index])
-        print('length of sequence : ', len(sequence))
-        print('length of alpha : ', len(alpha))
-        print('This is alpha : ', alpha)
+       
+            if sum(list(alpha[index].values())) > 1e-300:
+                c = 1/sum(list(alpha[index].values()))
+                for state in self._states:
+                        alpha[index][state] = c * alpha[index][state]
+            # print('length of sequence : ', len(sequence))
+           # print('length of alpha : ', len(alpha))
+           # print('This is alpha : ', alpha)
         return alpha
-    '''
+
     def _backward(self, sequence):
         sequence_length = len(sequence)
         if sequence_length == 0:
@@ -230,7 +265,7 @@ class Model(object):
 
         for index in range(sequence_length - 1, 0, -1):
             beta.insert(0, {})
-            for state_from in self._states:
+            for state_from in self._states: 
                 prob = 0
                 for state_to in self._states:
                     prob += beta[1][state_to] * \
@@ -238,8 +273,13 @@ class Model(object):
                         self.emit_prob(state_to, sequence[index])
                 beta[0][state_from] = prob
 
+            if sum(list(beta[0].values())) > 1e-300:
+                c = 1/sum(list(beta[0].values()))
+                for state in self._states:
+                    beta[0][state] = c*beta[0][state]
+        
         return beta
-        '''
+
 
     def evaluate(self, sequence):
         """
@@ -306,8 +346,8 @@ class Model(object):
             result.insert(0, max_state)
 
         return result
-'''
-    def learn(self, sequence, smoothing=0):
+
+    def learn(self, sequence, smoothing=0): #이건 단백질순서로만 한다! 상태 없이  
         """
         Use the given `sequence` to find the best state transition and
         emission probabilities.
@@ -337,17 +377,17 @@ class Model(object):
                 gamma[index][state] /= prob_sum
 
         xi = []
-        for index in range(length - 1):
+        for index in range(length - 1): # state 
             prob_sum = 0
             xi.append({})
             for state_from in self._states:
-                xi[index][state_from] = {}
+                xi[index][state_from] = {} # 
                 for state_to in self._states:
                     prob = alpha[index][state_from] * beta[index + 1][state_to] * \
                         self.trans_prob(state_from, state_to) * \
                         self.emit_prob(state_to, sequence[index + 1])
-                    xi[index][state_from][state_to] = prob
-                    prob_sum += prob
+                    xi[index][state_from][state_to] = prob # prob = x  분자 
+                    prob_sum += prob 
 
             if prob_sum == 0:
                 continue
@@ -355,6 +395,7 @@ class Model(object):
             for state_from in self._states:
                 for state_to in self._states:
                     xi[index][state_from][state_to] /= prob_sum
+                    #여기까지 하면 x 를 정할 수 있다. 
 
         states_number = len(self._states)
         symbols_number = len(self._symbols)
@@ -396,4 +437,4 @@ class Model(object):
             else:
                 for symbol in self._symbols:
                     self._emit_prob[state][symbol] = 0
-'''
+

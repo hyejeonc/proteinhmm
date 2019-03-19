@@ -41,7 +41,6 @@ def initialize(protein, secondstr):
         
         prob_trans = norm2d(transcount, statelist, statelist)
         prob_emit = norm2d(statesymbolcount, statelist, symbollist)
-
         prob_start = norm1d(startcount, statelist)
 
         return Hmm(prob_start, prob_trans, prob_emit, statelist, symbollist)
@@ -78,12 +77,11 @@ def train(proteins, secondstrs, d=0.001): #, prob_start=None, prob_trans=None, p
         for protein in proteins:
             update.learn(protein)
             prob = update.decode(protein)
-            print(prob)
+            #print(prob)
             post_prob += log(prob[2])
             
         if (pre_prob - post_prob) < d:
             break
-    
         post_prob = pre_prob
         
     return update
@@ -305,7 +303,14 @@ class Hmm(object):
        
                          
     def forward(self, sequence):
-        
+    ''' 
+    output must be a list as below 
+    
+    a = [ {'h':... , 'e':... , '_':... },    a_{0} = first state * prob_emit = prob_start * prob_emit
+                        ...    
+          {'h':... , 'e':... , '_':... }, ]  a_{length} = last state * prob_emit
+    '''    
+         
         a = [] # forward probability, alpha (list for [(t+1) states]; dict for probabilities of states {'h', 'e', '_'})            
                  # alpha is saved for next alpha, dynamics
         c = [{}] # scaling factor for very small number   
@@ -379,24 +384,7 @@ class Hmm(object):
             
         return b    
     
-    ''' 
-    output must be a list as below 
-    
-    a = [ {'h':... , 'e':... , '_':... },    a_{0} = first state * prob_emit = prob_start * prob_emit
-                        ...    
-          {'h':... , 'e':... , '_':... }, ]  a_{length} = last state * prob_emit
-    '''    
-    '''    
-        def probability(self, sequence): #a 전방확률의 나중에 구한 것 합 
-            a = self._forward(sequence)
-            sum_prob = 0.0
-            
-            for state in a[len(sequence)]:
-                sum_prob += a[len(sequence)][state]
-            
-            return sum_prob
-    
-    '''     
+ 
     
     def decode(self, sequence): #viterbi 
     
@@ -429,9 +417,6 @@ class Hmm(object):
                 
            
         return [v[t], dec_state, vmax[0]]
-
-                   
-
 
 ''' 
     output must be a list as below 
