@@ -11,79 +11,64 @@ Created on Mon Mar  4 17:25:48 2019
 
 Problem with float --> change to log 
 """
-from sequence_test import *
+
 from math import log
-#from math import log
 
-#def _gamma(sequence, statelist, symbollist):
-#    a = 
-
-def initialize(protein, secondstr):
-        statecount = {}
-        symbolcount = {}         
-        statesymbolcount = {}
-      
-        startcount = {}
-        transcount = {} 
-        for structure, chain in zip(secondstr, protein):
-            pre_state = None   
-            count1d(startcount, structure[0])    
-            for state, symbol in zip(structure, chain): #single protein
-                count1d(statecount, state)
-                count1d(symbolcount, symbol)
-                count2d(statesymbolcount, state, symbol) # for transmission probability           
-                if pre_state != None: 
-                    count2d(transcount, pre_state, state) # for emittance probability            
-                pre_state = state
-        
-        statelist = statecount.keys()
-        symbollist = symbolcount.keys()
-        
-        prob_trans = norm2d(transcount, statelist, statelist)
-        prob_emit = norm2d(statesymbolcount, statelist, symbollist)
-        prob_start = norm1d(startcount, statelist)
-
-        return Hmm(prob_start, prob_trans, prob_emit, statelist, symbollist)
+def initialize(initialset):
+    prob_start = initialset[0]
+    prob_trans = initialset[1]
+    prob_emit = initialset[2]
+    statelist = initialset[3]
+    symbollist = initialset[4]
+    return Hmm(prob_start, prob_trans, prob_emit, statelist, symbollist)
 
 #MLE(Maximum Likelihood Estimation)    
-def train(proteins, secondstrs, d=0.001): #, prob_start=None, prob_trans=None, prob_emit=None):
-    statelist = ['h', 'e', '_']
-    symbollist = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
-    
-    update = initialize(proteins, secondstrs)
+def train(initialset, proteins, secondstrs, d=0.0001, maxiter = 100): #, prob_start=None, prob_trans=None, prob_emit=None):
+    #statelist = ['h', 'e', '_']
+    #symbollist = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
+    update = initialize(initialset)
 
-    '''
-    for state in statelist:
-        prob_trans.append({})
-        prob_emit.append({})
-        prob_start.append({}) 
-        for post_state in statelist:
-            prob_trans[state][post_state] = 0.0
-    
-        for symbol in symbollist:
-            prob_emit[state][symbol] = 0.0
-           
-        prob_start[state] = 0.0
-    '''
-    #update = Hmm(prob_start, prob_trans, prob_emit, statelist, symbollist)
-    
     pre_prob = 0.0
     for protein in proteins:
-        prob = update.decode(protein)
-        pre_prob += log(prob[2])
+        prob = update.viterbi(protein)
+        pre_prob += log(prob[2]) #expectation
+    pre_prob /= len(proteins)
+    print(pre_prob/len(proteins))
     
-    while True: 
+    for i in range(maxiter): 
         post_prob = 0.0
+        print(i)
         for protein in proteins:
-            update.learn(protein)
-            prob = update.decode(protein)
-            #print(prob)
+            #E-M update transition probabilites and emission probabilities 
+            update.emupdate(protein)
+            prob = update.viterbi(protein) #viterbi probability of 
             post_prob += log(prob[2])
+        post_prob /= len(proteins)
+        print(pre_prob, post_prob)
+        if (post_prob > pre_prob) and (abs(post_prob - pre_prob) < d):
+            break
+        #if post_prob <= pre_prob:   
+        pre_prob = post_prob 
+        
+    '''
+    for i in range(maxiter): 
+        post_prob = 0.0
+        print(i)
+        for protein in proteins:
+            update.emupdate(protein)#E-M update transition probabilites and emission probabilities 
+            prob = update.viterbi(protein) #viterbi probability of 
+            post_prob += log(prob[2]) #prob = [v[t], dec_state, vmax[0]]
             
-        if (pre_prob - post_prob) < d:
+#https://www.cs.cmu.edu/~epxing/Class/10701-08s/recitation/em-hmm.pdf      ->   
+    
+        print((pre_prob - post_prob)/len(proteins))
+        if abs(pre_prob - post_prob)/len(proteins) < d:
+            print('this is post', post_prob)
+            print('this is pre', pre_prob)
             break
         post_prob = pre_prob
         
+    '''    
     return update
  
 #def em_prob_emit(sequence, statelist, symbollist):    
@@ -98,8 +83,8 @@ class Hmm(object):
         self._statelist = statelist
         self._symbollist = symbollist
     
-    def probshow(self):
-        return [self._prob_start, self._prob_trans, self._prob_emit]
+    def get(self):
+        return self._prob_start, self._prob_trans, self._prob_emit, self._statelist, self._symbollist
         
     def initialstart(self):   
         self._prob_trans = []
@@ -118,14 +103,12 @@ class Hmm(object):
                 
             self._prob_start[state] = 0.0
   
-    def learn(self, sequence):  #update, Baum-Welch
-       # print('this is prob_trans ', self._prob_trans)
-       # print('this is prob_emit ', self._prob_emit) 
+    def emupdate(self, sequence):  #update, Baum-Welch
         a = self.forward(sequence)
         b = self.backward(sequence)
-       # print('this is a ', a)
-       # print('this is b ', b)
-        g = []
+        
+        # Expectation value (E-step)
+        g = [] # get gamma 
         g_smooth = []
         sum_prob = 0.0
         for t in range(0, len(sequence)): # 0, 1, ... l, 
@@ -138,14 +121,8 @@ class Hmm(object):
             if sum_prob > 1e-300:
                 for state in self._statelist:
                     g[t][state] /= sum_prob
-            
-            
-              #  else:
-               #     g[t][state] = 0
-        #여기까지 n 번째 state 서  gamma 가 몇인지를 구함 
-        #print('this is g', g)
-        
-        x = []
+
+        x = [] # get xi
         x_smooth = []
         for t in range(0, len(sequence)-1): #until t-1 state
             x.append({})
@@ -159,57 +136,21 @@ class Hmm(object):
                         * b[t+1][post_state] 
                     sum_prob += x[t][pre_state][post_state]    
                 x_smooth.append(sum_prob)
-            #print('this is sum_prob', sum_prob) 
             
             if sum_prob > 1e-300:
                 for pre_state in self._statelist:
                     for post_state in self._statelist:
                         x[t][pre_state][post_state] /= sum_prob 
-            #else:
-            #    for pre_state in self._statelist:
-#                    for post_state in self._statelist:
-#                        x[t][pre_state][post_state] = 1e-300
-        #여기까지 해서 xi 를 구함. 
-        #print()
-        #print('this is x', x)
-        # print('this is g', g)
-        
-        '''
-       #for Transition probabilities 
-        for state in self._statelist:
-            sum_g = 0.0
-            for t in range(0, len(sequence)-1):         
-                sum_g += g[t][state] 
-            print('this is sum g t state in trans update', sum_g)# sigma gamma
-            
-            if sum_g > 1e-300:
-                #sum_sum_x = 0.0
-                for post_state in self._statelist:
-                    sum_x = 0.0
-                    for t in range(len(sequence)-1):
-                        sum_x += x[t][state][post_state]   #분자
-                    
-                    print('this is sum x in trans update', sum_x)
-                    print('this is sum_g in trans update', sum_g)
-                    
-                #sum_sum_x += sum_x 
-                    
-                    self._prob_trans[state][post_state] = sum_x / sum_g #왜 gamma 로 나눌까!      
-            else:  
-                for post_state in self._statelist:
-                    self._prob_trans[state][post_state] = 0
-        '''                
-        #for state in self._statelist:
-        #    self._prob_start[state] = g[0][state] #이 부분에 따라 start 필요하나 안필요하냐가 달라진다 
 
+
+        #Maximization step (M-step)
         #Laplace smoothing 
         p = 0.001
-    
         for state in self._statelist:
             #for start probabilities
            # p_smooth = 1 / (len(self._statelist) + )
 
-            self._prob_start[state] = (g[0][state] + p) / (1 + p*len(self._statelist))
+            self._prob_start[state] = (g[0][state] + p) / (1 + p * len(self._statelist))
                 
             #     self._prob_start[state] = (g[0][state] + 1) / (g_smooth[0] + len(self._statelist))
             
@@ -303,13 +244,13 @@ class Hmm(object):
        
                          
     def forward(self, sequence):
-    ''' 
-    output must be a list as below 
-    
-    a = [ {'h':... , 'e':... , '_':... },    a_{0} = first state * prob_emit = prob_start * prob_emit
-                        ...    
-          {'h':... , 'e':... , '_':... }, ]  a_{length} = last state * prob_emit
-    '''    
+        ''' 
+        output must be a list as below 
+        
+        a = [ {'h':... , 'e':... , '_':... },    a_{0} = first state * prob_emit = prob_start * prob_emit
+                            ...    
+              {'h':... , 'e':... , '_':... }, ]  a_{length} = last state * prob_emit
+        '''    
          
         a = [] # forward probability, alpha (list for [(t+1) states]; dict for probabilities of states {'h', 'e', '_'})            
                  # alpha is saved for next alpha, dynamics
@@ -345,9 +286,7 @@ class Hmm(object):
                 c = 1 / sum(list(a[t].values()))
                 for state in self._statelist:
                     a[t][state] *= c 
-            else: 
-                for state in self._statelist:
-                    a[t][state] = 1e-300
+   
             #print('a after scaling', a[t])
             # print('this is a sum in forward', sum(list(a[t].values())))        
            # print('this is a in forward', a[t])
@@ -386,8 +325,8 @@ class Hmm(object):
     
  
     
-    def decode(self, sequence): #viterbi 
-    
+    def viterbi(self, sequence): #viterbi 
+
         v = []
         dec_state = []
         dec_prob = []
@@ -395,7 +334,7 @@ class Hmm(object):
         for t in range(0, len(sequence)): # state number : 0, 1, ... , (length)               
             
             v.append({})
-            #print('this is start prob in decode', self._prob_start)
+            #print('this is start prob in viterbi', self._prob_start)
             if t == 0: 
                 for state in self._statelist:                 
                     v[t][state] = self.prob_start(state) * self.prob_emit(state, sequence[0]) 
@@ -409,19 +348,18 @@ class Hmm(object):
                 c = 1 / sum(list(v[t].values()))
                 for state in self._statelist:
                    v[t][state] = c * v[t][state]
-               
-                vmax[0] = c * vmax[0]#decode.append(vmax)
+                vmax[0] *= c #viterbi.append(vmax)
              
             dec_prob.append(vmax[0])           
             dec_state.append(vmax[1])        
-                
-           
-        return [v[t], dec_state, vmax[0]]
 
-''' 
-    output must be a list as below 
+        return [v[t], dec_state, vmax[0]]
     
-    a = [ {'h':... , 'e':... , '_':... },    a_{0} = first state * prob_emit = _prob_start * prob_emit
-                        ...    
-          {'h':... , 'e':... , '_':... }, ]  a_{length} = last state * prob_emit
-''' 
+
+        ''' 
+            output must be a list as below 
+            
+            a = [ {'h':... , 'e':... , '_':... },    a_{0} = first state * prob_emit = _prob_start * prob_emit
+                                ...    
+                  {'h':... , 'e':... , '_':... }, ]  a_{length} = last state * prob_emit
+        ''' 

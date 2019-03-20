@@ -8,8 +8,11 @@ Created on Tue Mar 19 10:00:43 2019
 
 #exe 만들기 리눅스 윈도우 http://codingdojang.com/scode/272?orderby=time
 # pyinstaller https://hyrama.com/?p=579
-import statistics as stat
 import sequence as seq
+
+import statistics as stat
+
+import hiddenmarkovmodel as hmm
 import os.path 
 import sys
 
@@ -17,8 +20,46 @@ path_train = None
 rawlines = None
 
 rawlines = seq.lineseq('.\dataset\protein-secondary-structure.train')
-a = seq.proteinseq(rawlines)
-stat.frequency(seq.proteinseq(rawlines)[0], seq.proteinseq(rawlines)[1])
+testlines = seq.lineseq('.\dataset\protein-secondary-structure.test')
+#proteinseq(rawlines)
+
+trainset = seq.proteinseq(rawlines) 
+testset = seq.proteinseq(testlines)
+
+initialset = stat.summary(trainset[0], trainset[1])
+#print statistical information about data sets, ex. frequency table, probabilities ... 
+print(initialset)
+old = hmm.initialize(initialset)
+new = hmm.train(initialset, trainset[0], trainset[1], 0.001, 100)
+print(new.get())
+
+decode = []
+likelihood = []
+decode_em = []
+likelihood_em = []
+
+for i in range(len(testset[0])):
+    for chain1, structure1 in zip(testset[0][i], testset[1][i]):
+        viterbi = old.viterbi(chain1)
+        decode.append(viterbi[:][1])
+        likelihood.append(viterbi[:][2])
+    
+        viterbi_em = new.viterbi(chain1)
+        decode_em.append(viterbi_em[:][1])
+        likelihood_em.append(viterbi_em[:][2])
+
+oldset = [testset[0], decode]
+newset = [testset[0], decode_em] 
+
+stat.summary(oldset[0], oldset[1])
+stat.summary(newset[0], newset[1])
+
+stat.singleprobplot(testset[0], testset[1], oldset[0], oldset[1], newset[0], newset[1])
+
+
+
+
+
 
 '''
 while True:
