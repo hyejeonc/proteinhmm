@@ -3,17 +3,17 @@
 
 This is a repository for project 'Prediction of protein secondary structure from sequence by Hiddem Markov Model(HMM) method' for project in course 'MOL3022- Bioinformatics - Method Oriented Project' at NTNU, in spring 2019. 
 
-Main files(/final/)
+Main files(./final/)
 -. hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
 -. statistics.py-- module file -- in updating until 22nd Mar, 2019 
 -. sequence.py -- module file -- last update 22nd Mar, 2019
 -. mathematics.py -- module file -- last update 22nd Mar, 2019
 
-Datasets(/final/dataset/)
--. protein-secondary-structure.train -- for training, 111
--. protein-secondary-structure.test -- for testing, 17
+Datasets(./final/dataset/)
+-. protein-secondary-structure.train -- for training, 111 sets
+-. protein-secondary-structure.test -- for testing, 17 sets
 
-Outputs(/final/)
+Outputs(./final/)
 -. summary4.csv
 -. raw_data4.csv
 
