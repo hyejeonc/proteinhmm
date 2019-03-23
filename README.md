@@ -1,7 +1,7 @@
-#Prediction of protein secondary structure from amino acid sequence - Bioinformatics approach
-##There are many folders and files, but only **final** folder is related to the complete program
+## Hiddem Markov Model : Prediction of protein secondary structure 
+##### This is a repository for project 'Prediction of protein secondary structure from sequence by Hiddem Markov Model(HMM) method' for a course 'MOL3022- Bioinformatics - Method Oriented Project' at NTNU, in spring 2019. 
 
-###This is a repository for project 'Prediction of protein secondary structure from sequence by Hiddem Markov Model(HMM) method' for ###project in course 'MOL3022- Bioinformatics - Method Oriented Project' at NTNU, in spring 2019. 
+####### There are many folders and files, but only **final** folder is related to the complete program
 
 Main files(./final/)
 - hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
@@ -44,9 +44,9 @@ prediction of protein secondary structure. BMC bioinformatics 8(1), 357 (2007)
 induction from coverings. In: 2011 IEEE Symposium on Computational Intelligence in Bioinformatics and
 Computational Biology (CIBCB), pp. 1{8 (2011). IEEE
 17. Protein HMM raw data files by programming tool https://github.com/dmvvliet/protein-HMMs
-18. hmmexample.py -- main file for predicting weather with comsumption of icecream (https://github.com/jason2506/PythonHMM)
+18. hmmexample.py -- main file for predicting weather with comsumption of icecream https://github.com/jason2506/PythonHMM
 19. weatherexample.py -- module file, same as 18.
-20. COMP3212CompBiologyLabs-master -- predicting genetic code from protein sequence (https://github.com/aloisklink/COMP3212CompBiologyLabs)
+20. COMP3212CompBiologyLabs-master -- predicting genetic code from protein sequence https://github.com/aloisklink/COMP3212CompBiologyLabs
 21. HMM and EM algorithm lecture pdf https://people.cs.umass.edu/~mccallum/courses/inlp2004a/lect10-hmm2.pdf
 22. HMM with weather example and tutorial https://sambaiga.github.io/2017/05/03/hmm-intro.html
 23. Baum-Welch(EM) algorithm http://www.biostat.jhsph.edu/bstcourse/bio638/notes/HMMs_BaumWelch.pdf
