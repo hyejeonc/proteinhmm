@@ -3,21 +3,27 @@
 
 ##### There are many folders and files, but only **final** folder is related to the complete program
 
-Main files(./final/)
+
+##### How to install 
+###### Windows 
+
+###### Linux
+
+##### Main files(./final/)
 - hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
 - statistics.py-- module file -- in updating until 22nd Mar, 2019 
 - sequence.py -- module file -- last update 22nd Mar, 2019
 - mathematics.py -- module file -- last update 22nd Mar, 2019
 
-Datasets(./final/dataset/)
+##### Datasets(./final/dataset/)
 - protein-secondary-structure.train -- for training, 111 sets
 - protein-secondary-structure.test -- for testing, 17 sets
 
-Outputs(./final/)
+##### Outputs(./final/)
 - summary4.csv
 - raw_data4.csv
 
-Reference documents and links
+##### Reference documents and links
 1. Jones, D.T.: Protein secondary structure prediction based on position-specic scoring matrices. Journal of
 molecular biology 292(2), 195{202 (1999)
 2. Example Diagram of HMM. http://yanfenglu.net/researchVAS_p1.htm
