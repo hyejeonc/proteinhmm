@@ -1,7 +1,7 @@
 ## Hiddem Markov Model : Prediction of protein secondary structure 
 ##### This is a repository for project 'Prediction of protein secondary structure from sequence by Hiddem Markov Model(HMM) method' for a course 'MOL3022- Bioinformatics - Method Oriented Project' at NTNU, in spring 2019. 
 
-####### There are many folders and files, but only **final** folder is related to the complete program
+##### There are many folders and files, but only **final** folder is related to the complete program
 
 Main files(./final/)
 - hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
@@ -37,8 +37,8 @@ Bioinformatics 9(2), 141{146 (1993)
 2nd ACM/IEEE-CS Joint Conference on Digital Libraries, pp. 295{300 (2002). ACM
 13. Landschulz, W.H., Johnson, P.F., McKnight, S.L.: The leucine zipper: a hypothetical structure common to a
 new class of dna binding proteins. Science 240(4860), 1759{1764 (1988)
-14. Soding, J.: Protein homology detection by hmm{hmm comparison. Bioinformatics 21(7), 951{960 (2004)
-15. Won, K.-J., Hamelryck, T., Prugel-Bennett, A., Krogh, A.: An evolutionary method for learning hmm structure:
+14. Soding, J.: Protein homology detection by hmm{hmm comparison. Bioinformatics 21(7), 951{960 (2004)
+15. Won, K.-J., Hamelryck, T., Prugel-Bennett, A., Krogh, A.: An evolutionary method for learning hmm structure:
 prediction of protein secondary structure. BMC bioinformatics 8(1), 357 (2007)
 16. Lee, L., Leopold, J.L., Frank, R.L.: Protein secondary structure prediction using blast and relaxed threshold rule
 induction from coverings. In: 2011 IEEE Symposium on Computational Intelligence in Bioinformatics and
