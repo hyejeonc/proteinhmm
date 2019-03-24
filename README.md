@@ -5,23 +5,36 @@
 
 
 ##### How to install 
-###### Windows 
+Download download files below
+- hiddenmarkovmodel.py  -- main file 
+- statistics.py-- module file 
+- sequence.py -- module file
+- mathematics.py -- module file
+  
+###### Windows
+Execute hiddenmarkovmodel.exe
 
 ###### Linux
+Type terminal command below at the directory that you have four .py files mentioned above.
+```
+chmod u+x hiddenmarkovmodel.py
+./hiddenmarkovmodel.py
+```
 
 ##### Main files(./final/)
-- hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
-- statistics.py-- module file -- in updating until 22nd Mar, 2019 
-- sequence.py -- module file -- last update 22nd Mar, 2019
-- mathematics.py -- module file -- last update 22nd Mar, 2019
+[ ] hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
+[ ] statistics.py-- module file -- in updating until 22nd Mar, 2019 
+[x] sequence.py -- module file -- last update 22nd Mar, 2019
+[x] mathematics.py -- module file -- last update 22nd Mar, 2019
 
 ##### Datasets(./final/dataset/)
 - protein-secondary-structure.train -- for training, 111 sets
 - protein-secondary-structure.test -- for testing, 17 sets
 
-##### Outputs(./final/)
-- summary4.csv
-- raw_data4.csv
+##### Outputs(./final/output/)
+- raw_data_simpleHMM.csv
+- raw_data_EMHMMconv.csv
+- raw_data_EMHMMiter.csv
 
 ##### Reference documents and links
 1. Jones, D.T.: Protein secondary structure prediction based on position-specic scoring matrices. Journal of
