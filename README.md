@@ -1,7 +1,6 @@
 ## Hiddem Markov Model : Prediction of protein secondary structure 
 ##### This is a repository for project 'Prediction of protein secondary structure from sequence by Hiddem Markov Model(HMM) method' for a course 'MOL3022- Bioinformatics - Method Oriented Project' at NTNU, in spring 2019. 
-
-##### There are many folders and files, but only **final** folder is related to the complete program
+##### There are many folders and files, but only **final** folder is related to the complete program.
 
 
 ##### How to install 
@@ -11,15 +10,25 @@
 - mathematics.py -- module file
   
 ###### Windows
-Execute hiddenmarkovmodel.exe
+1. Download all files in /final/windows/ folder. 
+2. Excecute hiddenmarkovmodel.exe file. 
+3. Type file directory for training and testing.
+4. Output files (decoded sequence) are saved at output folder.
+(Caution! 'output' folder MUST exist for saving.)
 
 ###### Linux
-1. Download four files above at ./final/linux/ with ./final/linux/dataset/ folder.
-2. Type terminal command below at the directory that you have four .py files mentioned above.
+1. Download four files above at ./final/linux/ 
+2. Input files MUST be in same directory with hiddenmarkovmodel.py 
+3. Type terminal command below at the directory that you have four .py files mentioned above.
 ```
 chmod u+x hiddenmarkovmodel.py
+```
+3. Type terminal command below for executing.
+```
 ./hiddenmarkovmodel.py
 ```
+4. Output files are saved in same directory with hiddenmarkovmodel.py
+
 
 ##### Main files(./final/)
 - [x] hiddenmarkovmodel.py  -- main file -- last update 25 Mar, 2019
