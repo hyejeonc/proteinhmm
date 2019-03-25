@@ -18,7 +18,7 @@
 
 ###### Linux
 1. Download four files above at ./final/linux/ 
-2. Input files MUST be in same directory with hiddenmarkovmodel.py 
+2. Input files MUST be in same folder with hiddenmarkovmodel.py 
 3. Type terminal command below at the directory that you have four .py files mentioned above.
 ```
 chmod u+x hiddenmarkovmodel.py
