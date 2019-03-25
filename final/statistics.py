@@ -6,31 +6,12 @@ Created on Tue Mar 19 15:41:52 2019
 """
 from mathematics import *
 import pandas as pd
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-
-
-def singleprobplot(orig_protein, orig_str, protein2, secondstr2, protein3, secondstr3):
-    first = accuracy(orig_protein, orig_str, protein2, secondstr2)
-    second = accuracy(orig_protein, orig_str, protein3, secondstr3)
-    # [[correct in single, total in single, percent], [], ... , []]
-    
-  
-    print('First(test1) Q3 by protein length\n', pd.DataFrame(first))
-    print(first)
-    
-    print('Second(test2) Q3 by protein length\n', pd.DataFrame(second))
-    print(second)
-    
-    w = 0.3
-    plot.bar(first[:][0]-w, first[:][2], )
-    plot.bar(second[:][0]+w, second[:][2], )
-    plt.show()
-    
-    return first, second
     
 def accuracy(origset, proteinset):
+    """
+    This method is for analysing accuracy depends on states by comparing two sets.
+    Input : [ [Protein1, Protein2, Protein3 ... ], [Structure1, Structure2, Structure3 ... ] ]
+    """
     proteins1 = origset[0]
     structures1 = origset[1]
     structures2 = proteinset[1]
@@ -40,13 +21,11 @@ def accuracy(origset, proteinset):
     crosscount = {}
     
     single_crosscount = {}    
-  #  sum_single_crosscount = {}
     q3_single = []
     
     correctcount = 0
     totalcount = 0
-    
-    
+
     for protein1, structure1, structure2 in zip(proteins1, structures1, structures2):
         single_correctcount = 0
         single_crosscount = {}
@@ -63,17 +42,17 @@ def accuracy(origset, proteinset):
         '''
         single_percent = 100 * single_correctcount / len(structure1)
         q3_single.append([len(structure1), single_correctcount, single_percent])
-      #  q3_single_dic = single_crosscount] #protein 마다 q3 를 구함 
+      #  q3_single_dic = single_crosscount] 
     
     statelist = statecount.keys()
     symbollist = symbolcount.keys()
 
     q3 = 100 * correctcount / totalcount
- 
-    #q3h_tot = 100 * crosscount['h']['h']/ sum(crosscount['h'].values)
-    #q3e_tot = 100 * crosscount['e']['e']/ sum(crosscount['e'].values)
-    #q3c_tot = 100 * crosscount['_']['_']/ sum(crosscount['_'].values)
-
+    '''
+    q3h_tot = 100 * crosscount['h']['h']/ sum(crosscount['h'].values)
+    q3e_tot = 100 * crosscount['e']['e']/ sum(crosscount['e'].values)
+    q3c_tot = 100 * crosscount['_']['_']/ sum(crosscount['_'].values)
+    '''
     q3_tot = [totalcount, correctcount, q3]
     q3_prob = norm2d(crosscount, statelist, statelist)
  
@@ -81,7 +60,11 @@ def accuracy(origset, proteinset):
                 
 
 def summary(proteinset):
+    """
+    This method is for analysing a amino acid sequence - secondary structure sequence data set.
+    Input : [ [Protein1, Protein2, Protein3 ... ], [Structure1, Structure2, Structure3 ... ] ]
 
+    """
     proteins = proteinset[0]
     structures = proteinset[1]
     
@@ -104,18 +87,19 @@ def summary(proteinset):
     
     statelist = list(statecount.keys())
     symbollist = list(symbolcount.keys()) 
-    
+    prob_start = norm1d(startcount, statelist)
+    prob_trans = norm2d(transcount, statelist, statelist)
+    prob_emit = norm2d(statesymbolcount, statelist, symbollist)
+    '''
     print('this is emit count for simple', statesymbolcount)
     print('Frequency table of start states\n', pd.DataFrame(startcount, index=[0]))
     print('Frequency table of transition, pre>>post\n', pd.DataFrame(transcount))
     print('Frequency table of emission, states>>symbols\n', pd.DataFrame(statesymbolcount))
     
-    prob_start = norm1d(startcount, statelist)
-    prob_trans = norm2d(transcount, statelist, statelist)
-    prob_emit = norm2d(statesymbolcount, statelist, symbollist)
+    
     print('Start probabilities\n', pd.DataFrame(prob_start, index=[0]))
     print('Transition probabilities, pre>>post\n', pd.DataFrame(prob_trans))
     print('Emission probabilities, states>>symbols\n', pd.DataFrame(prob_emit))
-
-    return [[startcount, transcount, statesymbolcount],[prob_start, prob_trans, prob_emit], [statelist, symbollist]]
+    '''
+    return [[startcount, transcount, statesymbolcount], [prob_start, prob_trans, prob_emit], [statelist, symbollist]]
             

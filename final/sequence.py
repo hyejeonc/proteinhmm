@@ -6,7 +6,7 @@ Created on Wed Feb 13 16:49:57 2019
 """
 from collections import Counter
 from mathematics import *
-#http://www.compbio.dundee.ac.uk/jpred4/about.shtml
+
 #aminoacid = ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
 #structure = ['h', 'e', '_']
 
@@ -15,7 +15,9 @@ from mathematics import *
 #statelist = {'h', 'e', '_'}
 
 def readfile(string):
-        """ Determine if argument is a string representing a numeric value. """ 
+        """
+        This is a method to determine if argument is a string representing a numeric value. 
+        """ 
         for kind in (str, str, str): 
             try: 
                 kind(string) 
@@ -26,7 +28,10 @@ def readfile(string):
         else: 
             return False 
 
-def lineseq(path): #lineseq(p, )
+def lineseq(path): 
+    """
+    This method is for seperating string to word for getting symbols and states.
+    """
     allstring = [] 
     with open(path) as f: 
         for line in (line.strip() for line in f):  ## line 말고 통째로 split 
@@ -37,14 +42,13 @@ def lineseq(path): #lineseq(p, )
     return allstring 
 
 def proteinseq(path, dbtype = 1):
-    '''
-    return ([ protein1 ], [ structure1 ],
-            [ protein2 ], [ structure2 ], 
-                       ....
-            [ protein  ], [ structure  )]             )
-    '''    
+    """
+    This is a method for getting a protein set. 
+    output = [ [ [ protein1 ], [ protein2 ], [ protein3 ], [ protein4 ], ... ],
+               [ [ structure1 ], [ structure2 ], [ structure3 ], [ structure4 ], ... ] ]
+    """   
     if dbtype == 0:
-        None #FASTA file reading method will be here       
+        None #FASTA file reading method will be here... To be continued...      
     else:
         allstring = lineseq(path)
         protein = []
@@ -72,94 +76,3 @@ def getproteinset(path):
     proteinset = proteinseq(path) 
     return proteinset                        
                     
-                    
-'''                    
-                for i in range
-                protein_single.extend(allstring[j+1])
-                if allstring[j+2] in self._symbollist:
-                    protein_single.extend(allstring[j])
-                    secondstr_single.extend(allstring[j+1])  
-                else:
-                    protein_single.extend(allstring[j])
-                    secondstr_single.extend(allstring[j+1])            
-                    protein.append(protein_single)
-                    secondstr.append(secondstr_single)
-                    protein_single = []
-                    secondstr_single = []         
-            else: pass
-            
-        return [protein, secondstr]
-'''    
-    
-    
- 
-'''
-sum = 0.0
-k = 0
-l = 0
-
-statecount = {}
-symbolcount = {}
-statesymbolcount = {}
-prob_emit = {}
-      
-for structure, chain in zip(secondstr, protein):
-    for state, symbol in zip(structure, chain):
-#        count1d(symbolcount, symbol)        
-#        count1d(statecount, state)        
-        count2d(statesymbolcount, state, symbol)
-prob_emit = norm2d(statesymbolcount, statelist, self._symbollist)
-'''
-'''
-def prob(proteinset):
-
-    protein = proteinset[0] 
-    secondstr = proteinset[1] 
-    
-    symbolcount = {}
-    statecount={}
-    statesymbolcount = {}
-    
-    #sum_emitcount = {}
-    prob_emit = {}
-    
-    sum_transcount = {}
-    prob_trans = {}
-    
-    for structure, chain in zip(secondstr, protein):
-        transcount = {}
-        pre_statecount = {}
-        
-        startcount = {}
-        prob_start = {}        
-        count1d(startcount, structure[0])    
-        
-        for state, symbol in zip(structure, chain): #single protein
-            statecount = {}
-            count1d(statecount, state) 
-            count1d(symbolcount, symbol)
-            count2d(statesymbolcount, state, symbol) # for transmission probability           
-            if pre_statecount != {}: 
-                count2d(transcount, pre_state, state) # for emittance probability            
-            pre_state = state
-            count1d(pre_statecount, pre_state)
-    
-        if sum_transcount == {}:
-            sum_transcount = transcount 
-        else:
-            for key1 in list(sum_transcount.keys()):
-                for key2 in list(transcount.keys()):
-                    if key1 == key2:                    
-                        b = Counter(sum_transcount[key1]) + Counter(transcount[key2])
-                        sum_transcount[key1] = dict(Counter(b))
-    statelist = list(statecount.keys())
-    symbollist = list(symbolcount.keys()) 
-    
-    prob_trans = norm2d(sum_transcount, statelist, statelist)
-    prob_emit = norm2d(statesymbolcount, statelist, symbollist)
-    #print(prob_trans)        
-
-    prob_start = norm1d(startcount, statelist)
-    #print(prob_start)
-    return [prob_start, prob_trans, prob_emit]
-'''
