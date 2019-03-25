@@ -5,7 +5,6 @@
 
 
 ##### How to install 
-Download download files below
 - hiddenmarkovmodel.py  -- main file 
 - statistics.py-- module file 
 - sequence.py -- module file
@@ -15,7 +14,8 @@ Download download files below
 Execute hiddenmarkovmodel.exe
 
 ###### Linux
-Type terminal command below at the directory that you have four .py files mentioned above.
+1. Download four files above at ./final/linux/ with ./final/linux/dataset/ folder.
+2. Type terminal command below at the directory that you have four .py files mentioned above.
 ```
 chmod u+x hiddenmarkovmodel.py
 ./hiddenmarkovmodel.py
