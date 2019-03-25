@@ -10,4 +10,4 @@ For Windows
 2. Excecute hiddenmarkovmodel.exe file. 
 3. Type file directory for training and testing.
 4. Output files (decoded sequence) are saved at output folder.
-(Caution! Output folder MUST exist for saving.)
+(Caution! 'output' folder MUST exist for saving.)
