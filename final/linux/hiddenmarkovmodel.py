@@ -1,4 +1,4 @@
-#!/usr/bin/env python[3.6]
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar  4 17:25:48 2019
@@ -6,12 +6,111 @@ Created on Mon Mar  4 17:25:48 2019
 @author: HYEJEONG
 
 """
-from mathematics import *
-import sequence as seq
-import statistics as stat
+import os.path
+#from mathematics import *
+#import sequence as seq
+#import statistics as stat
 
-import pandas as pd
+#import pandas as pd
 from math import log #Problem with float --> change to log 
+
+def readfile(string):
+        """
+        This is a method to determine if argument is a string representing a numeric value. 
+        """ 
+        for kind in (str, str, str): 
+            try: 
+                kind(string) 
+            except (TypeError, ValueError): 
+                pass 
+            else: 
+                return True 
+        else: 
+            return False 
+
+def lineseq(path): 
+    """
+    This method is for seperating string to word for getting symbols and states.
+    """
+    allstring = [] 
+    with open(path) as f: 
+        for line in (line.strip() for line in f):  ## line ¸»°í ÅëÂ°·Î split 
+         fields = line.split() 
+         if fields: # non-blank line? 
+             if readfile(fields[0]):
+                 allstring += fields
+    return allstring 
+
+def proteinseq(path, dbtype = 1):
+    """
+    This is a method for getting a protein set. 
+    output = [ [ [ protein1 ], [ protein2 ], [ protein3 ], [ protein4 ], ... ],
+               [ [ structure1 ], [ structure2 ], [ structure3 ], [ structure4 ], ... ] ]
+    """   
+    if dbtype == 0:
+        None #FASTA file reading method will be here... To be continued...      
+    else:
+        allstring = lineseq(path)
+        protein = []
+        secondstr = []   
+        i = None
+        for j in range(len(allstring)):    
+            if allstring[j] == '<>' or allstring[j] == '>':
+                protein_single = []
+                secondstr_single = []
+                i = j+1
+                while i < len(allstring):
+                    if allstring[i] == 'end' or allstring[i] == '<>' or allstring[i] == '<end>'  :
+                        protein.append(protein_single)
+                        secondstr.append(secondstr_single)
+                        protein_single = []
+                        secondstr_single = []
+                        break
+                    else: #allstring[i] != '<' or allstring[i] != '>' or allstring[i] != '<>':
+                        protein_single.extend(allstring[i])
+                        secondstr_single.extend(allstring[i+1])
+                        i += 2
+    return protein, secondstr         
+
+def getproteinset(path):
+    proteinset = proteinseq(path) 
+    return proteinset  
+
+#Mathematics.py
+def count1d(count, item): #Count +1 'count' if 'item' is in 'count'. 
+    if item not in count:
+        count[item] = 0
+    count[item] += 1
+
+def count2d(count, item1, item2): #Count +1 'count' if 'item' is in 'count', for 2-dimensional array(dictionary)
+    if item1 not in count:
+        count[item1] = {}
+    count1d(count[item1], item2)
+
+def norm1d(prob, item_set):  #Normalize 1-dimensional array for getting probability
+    result = {} 
+    prob_sum = 0.0
+    
+    for item in item_set:
+        prob_sum += prob.get(item, 0)
+    
+    if prob_sum == 0:
+        result[item] = 0
+    else:    
+        for item in item_set:
+            result[item] = prob.get(item, 0) / prob_sum            
+    return result
+                       
+def norm2d(prob, item_set1, item_set2): #Normalize 2-dimensional array for getting probability
+    result = {}
+    
+    if prob is None:
+        for item in item_set1:
+            result[item] = norm1d(None, item_set2)
+    for item in item_set1:
+        result[item] = norm1d( prob.get(item, 0), item_set2)
+    
+    return result
   
 class Hmm(object):
     """
@@ -412,21 +511,22 @@ def printdata(file, data):
             f.write("\n")
             f.write(str(data[1][i]))
             f.write("\n\n\n")            
-        pd.set_option('display.max_colwidth', 3*max(size)) 
-        pd.set_option('display.max_rows', 3*max(size)) 
-        tr = pd.DataFrame(data).T
-        f.write(tr.to_string())
+       # pd.set_option('display.max_colwidth', 3*max(size)) 
+       # pd.set_option('display.max_rows', 3*max(size)) 
+       # tr = pd.DataFrame(data).T
+       # f.write(tr.to_string())
 
 if __name__ == "__main__":
-    path_train = '.\dataset\protein-secondary-structure.train'
-    path_test = '.\dataset\protein-secondary-structure.test'
-    path_decode = '.\output\raw_data.csv'
+    path_train = b'protein-secondary-structure.train'
+    path_test = b'protein-secondary-structure.test'
+    path_decode = b'raw_data.csv'
     rawlines = None
     while True:
         try:
-            path_train = input('Insert input file for training \n(Exit key : Ctrl + C) \n(Example set : .\dataset\protein-secondary-structure.train) : \n ')
-            rawlines = seq.lineseq(path_train)
-            #print(rawlines)
+            path_train = input('Insert input file for training \n(Exit key : Ctrl + C) \n(Example set : protein-secondary-structure.train) : \n ')
+            path = os.path.abspath(path_train) 
+            rawlines = lineseq(path)
+            # print(rawlines)
             if rawlines == None:
                 print('Empty input file. Try again')
                 continue
@@ -441,8 +541,9 @@ if __name__ == "__main__":
     
     while True:
         try:
-            path_test = input('Insert input file for testing \n(for example: .\dataset\protein-secondary-structure.test) : \n ')
-            rawlines = seq.lineseq(path_test)
+            path_test = input('Insert input file for testing \n(for example : protein-secondary-structure.test) : \n ')
+            path = os.path.abspath(path_test)
+            rawlines = lineseq(path)
             #print(rawlines)
             if rawlines == None:
                 print('Empty input file. Try again.')
@@ -452,43 +553,30 @@ if __name__ == "__main__":
 
         except FileNotFoundError or NameError as err:  
             print(err)
-            print('This is not available input file. Select options with integer number below (1, 2, 3).', \
-                '1. Try another file', \
-                '2. Use example input file (.\dataset\protein-secondary-structure.test)', \
-                '3. Exit : Ctrl + C', \
-                sep='\n')  
-            trytype = input()
-            print('Option selected :', trytype)
-            if trytype == str(1): 
-                continue
-            elif trytype == str(2):
-                path_test = '.\dataset\protein-secondary-structure.test'
-                break
-            else:
-                print('Incorrect value. Try again')
-                continue     
+            print('This is not available input file. Try again')  
+            continue
 
     print(path_train, 'is a file for training\n')
     print(path_test, 'is a file for testing\n\n')
-    print('decoded raw data is saved as')
-    print('.\output\raw_data_method.csv')
+    print(r'decoded raw data is saved as')
+    print(r'raw_data_method.csv')
     
-    trainset = seq.getproteinset(path_train)
-    testset = seq.getproteinset(path_test)
+    trainset = getproteinset(path_train)
+    testset = getproteinset(path_test)
 
     trainmodel = initialHmm(trainset)
     data_simple = trainmodel.decode(testset)
-    printdata(r'.\output\raw_data_simpleHMM.csv', data_simple)
+    printdata(r'raw_data_simpleHMM.csv', data_simple)
     
     trainmodel_conv = initialHmm(trainset)
     trainmodel_conv.train(trainset, trainset)
     data_conv = trainmodel_conv.decode(testset)
-    printdata(r'.\output\raw_data_EMHMMconv.csv', data_conv)
+    printdata(r'raw_data_EMHMMconv.csv', data_conv)
     
     trainmodel_iter = initialHmm(trainset)
     trainmodel_iter.train(trainset, trainset, iteration=True)
     data_iter = trainmodel_iter.decode(testset)
-    printdata(r'.\output\raw_data_EMHMMiter.csv', data_iter)
+    printdata(r'raw_data_EMHMMiter.csv', data_iter)
     
     """
     Want more statistical analysis?
@@ -508,7 +596,7 @@ if __name__ == "__main__":
         f.write("\n\n######EM trained result - Convergence / from initial \n\n")
         f.write(str(trainmodel.decode(testset)))
         f.write("\n\n")
-    T = pd.DataFrame(trainmodel.decode(testset)).T
+   # T = pd.DataFrame(trainmodel.decode(testset)).T
     T.to_csv("Result_comparetrains.csv", mode='a', header=True)  # Save in result.txt file
 
     with open("Result_comparetrains.csv", "a") as f:
