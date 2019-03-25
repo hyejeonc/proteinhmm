@@ -22,10 +22,10 @@ chmod u+x hiddenmarkovmodel.py
 ```
 
 ##### Main files(./final/)
-[ ] hiddenmarkovmodel.py  -- main file -- to be updated after 8th Mar - 22nd Mar, 2019
-[ ] statistics.py-- module file -- in updating until 22nd Mar, 2019 
-[x] sequence.py -- module file -- last update 22nd Mar, 2019
-[x] mathematics.py -- module file -- last update 22nd Mar, 2019
+- [x] hiddenmarkovmodel.py  -- main file -- last update 25 Mar, 2019
+- [ ] statistics.py-- module file -- in updating until 22 Mar, 2019 
+- [x] sequence.py -- module file -- last update 22 Mar, 2019
+- [x] mathematics.py -- module file -- last update 22 Mar, 2019
 
 ##### Datasets(./final/dataset/)
 - protein-secondary-structure.train -- for training, 111 sets
