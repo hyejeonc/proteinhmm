@@ -4,10 +4,10 @@ This is a program for decoding protein secondary structure sequence.
 Created by Hyejeong Cheon, March 2019.
 
 ### Tutorial
-For Linux
-1. Download four files above at ./final/linux/ 
+###### Linux
+1. Download all files in /final/linux/ folder and unzip it.
 2. Input files MUST be in same folder with hiddenmarkovmodel.py 
-3. Type terminal command below at the directory that you have four .py files mentioned above.
+3. Type terminal command below at the directory which has hiddenmarkovmodel.py in.
 ```
 chmod u+x hiddenmarkovmodel.py
 ```
