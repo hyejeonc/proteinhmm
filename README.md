@@ -10,14 +10,14 @@ There are many folders and files, but only **'final'** folder is related to the 
 - mathematics.py -- module file
   
 ###### Windows
-1. Download all files in /final/windows/ folder. 
+1. Download all files in /final/windows/ folder and unzip. 
 2. Excecute hiddenmarkovmodel.exe file. 
 3. Type file directory for training and testing.
 4. Output files (decoded sequence) are saved at output folder.
 (Caution! 'output' folder MUST exist for saving.)
 
 ###### Linux
-1. Download four files above at ./final/linux/ 
+1. Download all files in /final/linux/ folder unzip.
 2. Input files MUST be in same folder with hiddenmarkovmodel.py 
 3. Type terminal command below at the directory that you have four .py files mentioned above.
 ```
