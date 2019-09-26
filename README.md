@@ -1,7 +1,8 @@
 ## Hiddem Markov Model : Prediction of protein secondary structure 
 ##### This is a repository for project 'Prediction of protein secondary structure from sequence by Hiddem Markov Model(HMM) method' for a course 'MOL3022- Bioinformatics - Method Oriented Project' at NTNU, in spring 2019. 
-There are many folders and files, but only **'final'** folder is related to the complete program.
+##### [01.Aug.19] There is an update in program for course FY3490  in Autumn 2019. 
 
+There are many folders and files, but only **'final'** folder is related to the complete program.
 
 ##### How to install 
 - hiddenmarkovmodel.py  -- main file 
